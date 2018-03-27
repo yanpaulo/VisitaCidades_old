@@ -9,16 +9,13 @@ namespace VisitaCidades
 {
     public class Problema
     {
-        public MapaGrid Mapa { get; private set; }
+        public MapaGrid Mapa { get; set; }
             = MapaGrid.Random();
 
         public Solucao Solucao { get; private set; }
 
-        public Solucao SolucaoAleatoria()
-        {
-            Solucao = Solucao.Nova(Mapa);
-            return Solucao;
-        }
+        public Solucao SolucaoAleatoria() => 
+            Solucao = Solucao.Random(Mapa);
 
         public Solucao ProximaSolucao()
         {
@@ -31,7 +28,7 @@ namespace VisitaCidades
                     lista.Remove(item);
                     lista.Insert(p, item);
 
-                    var solucao = new Solucao(lista, Mapa);
+                    var solucao = Solucao.Nova(Mapa, lista);
                     if (solucao.Custo < custo)
                     {
                         Solucao = solucao;

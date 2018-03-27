@@ -7,16 +7,22 @@ namespace IABusca.Mapas
 {
     public class MapaGrid : Mapa
     {
-        public static readonly int RandomMin = 10;
-        public static readonly int RandomMax = 100;
+        #region Construtor Privado
+        private MapaGrid() { }
+        #endregion
 
-        private int tamanho;
-        private Local[,] vetor;
+        public int RandomMin { get; private set; }
 
-        public static MapaGrid Random(int tamanho = 5)
+        public int RandomMax { get; private set; }
+
+        public int Tamanho { get; private set; }
+
+        public Local[,] Vetor { get; private set; }
+
+        public static MapaGrid Random(int tamanho = 5, int randomMin = 10, int randomMax = 100)
         {
             var vetor = new Local[tamanho, tamanho];
-            var mapa = new MapaGrid { vetor = vetor, tamanho = tamanho };
+            var mapa = new MapaGrid { Vetor = vetor, Tamanho = tamanho };
 
             var rng = new Random();
             var nome = 1;
@@ -38,7 +44,7 @@ namespace IABusca.Mapas
                     if (i > 0)
                     {
                         var esquerda = vetor[i - 1, j];
-                        var distancia = esquerda.Ligacoes.SingleOrDefault(l => l.Local == local)?.Distancia ?? rng.Next(RandomMin, RandomMax);
+                        var distancia = esquerda.Ligacoes.SingleOrDefault(l => l.Local == local)?.Distancia ?? rng.Next(randomMin, randomMax);
 
                         local.Ligacoes.Add(new Ligacao
                         {
@@ -49,7 +55,7 @@ namespace IABusca.Mapas
                     if (i < tamanho - 1)
                     {
                         var direita = vetor[i + 1, j];
-                        var distancia = direita.Ligacoes.SingleOrDefault(l => l.Local == local)?.Distancia ?? rng.Next(RandomMin, RandomMax);
+                        var distancia = direita.Ligacoes.SingleOrDefault(l => l.Local == local)?.Distancia ?? rng.Next(randomMin, randomMax);
 
                         local.Ligacoes.Add(new Ligacao
                         {
@@ -60,7 +66,7 @@ namespace IABusca.Mapas
                     if (j > 0)
                     {
                         var cima = vetor[i, j - 1];
-                        var distancia = cima.Ligacoes.SingleOrDefault(l => l.Local == local)?.Distancia ?? rng.Next(RandomMin, RandomMax);
+                        var distancia = cima.Ligacoes.SingleOrDefault(l => l.Local == local)?.Distancia ?? rng.Next(randomMin, randomMax);
 
                         local.Ligacoes.Add(new Ligacao
                         {
@@ -71,7 +77,7 @@ namespace IABusca.Mapas
                     if (j < tamanho - 1)
                     {
                         var baixo = vetor[i, j + 1];
-                        var distancia = baixo.Ligacoes.SingleOrDefault(l => l.Local == local)?.Distancia ?? rng.Next(RandomMin, RandomMax);
+                        var distancia = baixo.Ligacoes.SingleOrDefault(l => l.Local == local)?.Distancia ?? rng.Next(randomMin, randomMax);
                         local.Ligacoes.Add(new Ligacao
                         {
                             Distancia = distancia,
@@ -81,20 +87,23 @@ namespace IABusca.Mapas
                 }
             }
 
+            mapa.RandomMin = randomMin;
+            mapa.RandomMax = randomMax;
+
             return mapa;
         }
 
         public void Imprime()
         {
-            for (int i = 0; i < tamanho; i++)
+            for (int i = 0; i < Tamanho; i++)
             {
-                for (int j = 0; j < tamanho; j++)
+                for (int j = 0; j < Tamanho; j++)
                 {
-                    var local = vetor[i, j];
+                    var local = Vetor[i, j];
                     Console.Write(local.Nome);
-                    if (j < tamanho - 1)
+                    if (j < Tamanho - 1)
                     {
-                        var proximo = vetor[i, j + 1];
+                        var proximo = Vetor[i, j + 1];
                         var ligacao = local.Ligacoes.Single(l => l.Local == proximo);
                         Console.Write("\t");
                         ColoredPrint($"{ligacao.Distancia}");
@@ -104,16 +113,16 @@ namespace IABusca.Mapas
                 
                 Console.WriteLine();
                 Console.WriteLine();
-                if (i < tamanho - 1)
+                if (i < Tamanho - 1)
                 {
-                    for (int j = 0; j < tamanho; j++)
+                    for (int j = 0; j < Tamanho; j++)
                     {
-                        var local = vetor[i, j];
-                        var proximo = vetor[i + 1, j];
+                        var local = Vetor[i, j];
+                        var proximo = Vetor[i + 1, j];
                         var ligacao = local.Ligacoes.Single(l => l.Local == proximo);
                         Console.Write(" ");
                         ColoredPrint($"{ligacao.Distancia}");
-                        if (i < tamanho - 1)
+                        if (i < Tamanho - 1)
                         {
                             Console.Write("\t\t");
                         }

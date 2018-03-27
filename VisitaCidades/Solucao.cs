@@ -10,37 +10,41 @@ namespace VisitaCidades
 {
     public class Solucao
     {
+
+        public MapaGrid Mapa { get; private set; }
         public List<Local> Lista { get; private set; }
         public int Custo { get; private set; }
-        public bool Valida { get; private set; }
-        public Mapa Mapa { get; private set; }
 
         public int CustoRota { get; private set; }
         public int CustoRepeticoes { get; private set; }
         public int CustoInicioFim { get; private set; }
 
-        public Solucao(List<Local> lista, Mapa mapa)
+        public bool Valida => CustoRepeticoes == 0;
+
+        #region Construtor Privado
+        private Solucao() { } 
+        #endregion
+
+        public Solucao(List<Local> lista, MapaGrid mapa)
         {
             Mapa = mapa;
             Lista = lista.ToList();
 
             CalculaCusto();
-            ValidaSolucao();
         }
 
-        public static Solucao Random(MapaGrid mapa)
+        public static Solucao Nova(MapaGrid mapa, List<Local> lista)
         {
-            var rng = new Random();
-            var lista = new List<Local>();
-            var atual = mapa.LocalAleatorio();
+            var solucao =
+                new Solucao
+                {
+                    Mapa = mapa,
+                    Lista = lista.ToList()
+                };
 
-            while (lista.Count < mapa.Locais.Count)
-            {
-                var locais = mapa.Locais.Where(l => !lista.Contains(l)).ToList();
-                lista.Add(locais[rng.Next(locais.Count)]);
-            }
+            solucao.CalculaCusto();
 
-            return new Solucao(lista, mapa);
+            return solucao;
         }
 
         public static Solucao Nova(MapaGrid mapa)
@@ -64,9 +68,19 @@ namespace VisitaCidades
             return new Solucao(lista, mapa);
         }
 
-        private void ValidaSolucao()
+        public static Solucao Random(MapaGrid mapa)
         {
-            Valida = CustoRepeticoes == 0;
+            var rng = new Random();
+            var lista = new List<Local>();
+            var atual = mapa.LocalAleatorio();
+
+            while (lista.Count < mapa.Locais.Count)
+            {
+                var locais = mapa.Locais.Where(l => !lista.Contains(l)).ToList();
+                lista.Add(locais[rng.Next(locais.Count)]);
+            }
+
+            return new Solucao(lista, mapa);
         }
 
         private void CalculaCusto()
@@ -75,23 +89,22 @@ namespace VisitaCidades
 
             for (int i = 0; i < Lista.Count - 1; i++)
             {
-                var bcu = ResolveBCU(Lista[i], Lista[i + 1]);
+                var bcu = BCU(Lista[i], Lista[i + 1]);
                 var solucao = bcu.Solucao();
 
                 CustoRota += bcu.Objetivo.Custo.Value;
-                CustoRepeticoes += solucao.Count() - 2;
+                CustoRepeticoes += solucao.Count() > 2 ? bcu.Objetivo.Custo.Value * 2 : 0;
             }
-            CustoRepeticoes *= 100;
 
             custo += CustoRota;
             custo += CustoRepeticoes;
 
-            custo += (CustoInicioFim = ResolveBCU(Lista.First(), Lista.Last()).Objetivo.Custo.Value * 2);
+            custo += (CustoInicioFim = BCU(Lista.First(), Lista.Last()).Objetivo.Custo.Value);
 
             Custo = custo;
         }
 
-        private BuscaCustoUniforme<Local> ResolveBCU(Local origem, Local destino)
+        private BuscaCustoUniforme<Local> BCU(Local origem, Local destino)
         {
             var problemaMapa = new ProblemaMapa
             {
@@ -110,8 +123,11 @@ namespace VisitaCidades
             }
 
             return bcu;
-
         }
 
+
+
+        public override string ToString() =>
+            string.Join(", ", Lista.Select(l => l.Nome));
     }
 }

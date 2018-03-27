@@ -10,15 +10,18 @@ namespace VisitaCidades.ConsoleApp
     {
         static void Main(string[] args)
         {
-            var bhc = new BuscaHillClimbing();
-            var solucao = bhc.Resolve();
+            var mapa = MapaGrid.Random(5);
+            var problema = new Problema { Mapa = mapa };
+            var busca = new BuscaHillClimbing { Problema = problema };
+            var solucao = busca.Resolve();
 
-            bhc.Problema.Mapa.Imprime();
-            Console.WriteLine(string.Join(", ", solucao.Lista.Select(l => l.Nome)));
             if (!solucao.Valida)
             {
-                Console.WriteLine("Solução Inválida!!!!!!");
+                Console.WriteLine("Solução ideal não encontrada. Melhor solução: ");
             }
+            busca.Problema.Mapa.Imprime();
+            Console.WriteLine(solucao);
+
             if (Debugger.IsAttached)
             {
                 Debugger.Break();

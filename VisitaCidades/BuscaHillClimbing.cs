@@ -7,17 +7,18 @@ namespace VisitaCidades
 {
     public class BuscaHillClimbing
     {
-        private readonly int iteracoes = 100;
+        public int Iteracoes { get; set; } = 50;
 
-        public Problema Problema { get; private set; } =
+        public Problema Problema { get; set; } =
             new Problema();
 
         public Solucao Resolve()
         {
-            for (int i = 0; i < iteracoes; i++)
+            for (int i = 0; i < Iteracoes; i++)
             {
                 var solucao = Problema.SolucaoAleatoria();
-                Console.WriteLine("Solução Inicial: " + string.Join(", ", solucao.Lista.Select(l => l.Nome)));
+                var melhor = solucao;
+                Console.WriteLine($"Solução Inicial: {solucao}");
                 Console.WriteLine($"Custo Inicial: {solucao.CustoRota}, {solucao.CustoRepeticoes}, {solucao.CustoInicioFim}");
                 while (true)
                 {
@@ -27,10 +28,14 @@ namespace VisitaCidades
                         break;
                     }
                     solucao = novaSolucao;
+                    if (solucao.Custo < melhor.Custo)
+                    {
+                        melhor = solucao;
+                    }
                 }
                 Console.WriteLine($"Custo Final: {solucao.CustoRota}, {solucao.CustoRepeticoes}, {solucao.CustoInicioFim}");
                 Console.WriteLine("----------------------------");
-                if (solucao.Valida || i == iteracoes - 1)
+                if (solucao.Valida || i == Iteracoes - 1)
                 {
                     Console.WriteLine($"Restarts: {i}");
                     return solucao;
