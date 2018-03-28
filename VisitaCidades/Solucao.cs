@@ -10,11 +10,11 @@ namespace VisitaCidades
 {
     public class Solucao
     {
-
         public MapaGrid Mapa { get; private set; }
         public List<Local> Lista { get; private set; }
-        public int Custo { get; private set; }
+        public List<Rota> Rotas { get; private set; }
 
+        public int Custo { get; private set; }
         public int CustoRota { get; private set; }
         public int CustoRepeticoes { get; private set; }
         public int CustoInicioFim { get; private set; }
@@ -22,7 +22,7 @@ namespace VisitaCidades
         public bool Valida => CustoRepeticoes == 0;
 
         #region Construtor Privado
-        private Solucao() { } 
+        private Solucao() { }
         #endregion
 
         public Solucao(List<Local> lista, MapaGrid mapa)
@@ -33,7 +33,7 @@ namespace VisitaCidades
             CalculaCusto();
         }
 
-        public static Solucao Nova(MapaGrid mapa, List<Local> lista)
+        public static Solucao Nova(MapaGrid mapa, List<Local> lista, List<Rota> rotas)
         {
             var solucao =
                 new Solucao
@@ -43,11 +43,13 @@ namespace VisitaCidades
                 };
 
             solucao.CalculaCusto();
+            solucao.Rotas = rotas;
+            solucao.AtualizaRotas();
 
             return solucao;
         }
 
-        public static Solucao Nova(MapaGrid mapa)
+        public static Solucao Nova(MapaGrid mapa, List<Rota> rotas)
         {
             var rng = new Random();
             var lista = new List<Local>();
@@ -65,10 +67,10 @@ namespace VisitaCidades
                 atual = proximo;
             }
 
-            return new Solucao(lista, mapa);
+            return Nova(mapa, lista, rotas);
         }
 
-        public static Solucao Random(MapaGrid mapa)
+        public static Solucao Random(MapaGrid mapa, List<Rota> rotas)
         {
             var rng = new Random();
             var lista = new List<Local>();
@@ -80,8 +82,27 @@ namespace VisitaCidades
                 lista.Add(locais[rng.Next(locais.Count)]);
             }
 
-            return new Solucao(lista, mapa);
+            return Nova(mapa, lista, rotas);
         }
+
+        public void Imprime()
+        {
+            foreach (var r in Rotas)
+            {
+                Util.ColoredPrint($"{r.Nome}: {string.Join(", ", r.Locais.Select(l => l.Nome))}\n", r.Cor, ConsoleColor.Black);
+            }
+        }
+
+        public void AtualizaRotas()
+        {
+            int count = 0;
+            foreach (var r in Rotas)
+            {
+                r.Locais = Lista.Skip(count).Take(r.Tamanho).ToList();
+                count += r.Tamanho;
+            }
+        }
+
 
         private void CalculaCusto()
         {
@@ -124,8 +145,6 @@ namespace VisitaCidades
 
             return bcu;
         }
-
-
 
         public override string ToString() =>
             string.Join(", ", Lista.Select(l => l.Nome));

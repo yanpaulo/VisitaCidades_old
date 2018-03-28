@@ -9,8 +9,7 @@ namespace VisitaCidades
     {
         public int Iteracoes { get; set; } = 50;
 
-        public Problema Problema { get; set; } =
-            new Problema();
+        public Problema Problema { get; set; }
 
         public Solucao Resolve()
         {

@@ -2,8 +2,9 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using IABusca.Mapas;
 
-namespace IABusca.Mapas
+namespace VisitaCidades
 {
     public class MapaGrid : Mapa
     {
@@ -93,24 +94,25 @@ namespace IABusca.Mapas
             return mapa;
         }
 
-        public void Imprime()
+        public void Imprime(List<Rota> rotas)
         {
             for (int i = 0; i < Tamanho; i++)
             {
                 for (int j = 0; j < Tamanho; j++)
                 {
                     var local = Vetor[i, j];
-                    Console.Write(local.Nome);
+                    ImprimeNomeLocal(rotas, local);
+
                     if (j < Tamanho - 1)
                     {
                         var proximo = Vetor[i, j + 1];
                         var ligacao = local.Ligacoes.Single(l => l.Local == proximo);
                         Console.Write("\t");
-                        ColoredPrint($"{ligacao.Distancia}");
+                        Util.ColoredPrint($"{ligacao.Distancia}");
                         Console.Write("\t");
                     }
                 }
-                
+
                 Console.WriteLine();
                 Console.WriteLine();
                 if (i < Tamanho - 1)
@@ -121,7 +123,7 @@ namespace IABusca.Mapas
                         var proximo = Vetor[i + 1, j];
                         var ligacao = local.Ligacoes.Single(l => l.Local == proximo);
                         Console.Write(" ");
-                        ColoredPrint($"{ligacao.Distancia}");
+                        Util.ColoredPrint($"{ligacao.Distancia}");
                         if (i < Tamanho - 1)
                         {
                             Console.Write("\t\t");
@@ -133,18 +135,19 @@ namespace IABusca.Mapas
             }
         }
 
-        private static void ColoredPrint(string str)
+        private static void ImprimeNomeLocal(List<Rota> rotas, Local local)
         {
-            try
+            var rota = rotas.FirstOrDefault(r => r.Locais.Contains(local));
+            if (rota != null)
             {
-                Console.BackgroundColor = ConsoleColor.Cyan;
-                Console.ForegroundColor = ConsoleColor.Black;
-                Console.Write(str);
+                Util.ColoredPrint(local.Nome, rota.Cor, ConsoleColor.Black);
             }
-            finally
+            else
             {
-                Console.ResetColor();
+                Console.Write(local.Nome);
             }
         }
+
+        
     }
 }
