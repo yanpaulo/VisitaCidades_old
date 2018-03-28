@@ -26,7 +26,7 @@ namespace VisitaCidades.ConsoleApp
             busca.Problema.Mapa.Imprime(solucao.Rotas);
             solucao.Imprime();
             Console.WriteLine(solucao);
-            Console.WriteLine($"Tempo gasto: {sw.ElapsedMilliseconds}ms");
+            Console.WriteLine($"Tempo gasto: {sw.ElapsedMilliseconds / 1000.0:N2}s");
             if (Debugger.IsAttached)
             {
                 Debugger.Break();

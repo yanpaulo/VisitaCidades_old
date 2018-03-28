@@ -44,7 +44,6 @@ namespace VisitaCidades
 
             solucao.CalculaCusto();
             solucao.Rotas = rotas;
-            solucao.AtualizaRotas();
 
             return solucao;
         }
@@ -114,7 +113,7 @@ namespace VisitaCidades
                 var solucao = bcu.Solucao();
 
                 CustoRota += bcu.Objetivo.Custo.Value;
-                CustoRepeticoes += solucao.Count() > 2 ? bcu.Objetivo.Custo.Value * 2 : 0;
+                CustoRepeticoes += solucao.Count() > 2 ? bcu.Objetivo.Custo.Value * 10 : 0;
             }
 
             custo += CustoRota;
